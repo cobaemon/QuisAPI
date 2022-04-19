@@ -153,6 +153,4 @@ cython_debug/
 
 
 # ローカル環境
-local_settings.py
-.env
 migrations
