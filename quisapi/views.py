@@ -58,3 +58,17 @@ class QuizCRUD(viewsets.ModelViewSet):
     serializer_class = QuizSerializer
     pagination_class = StandardResultsSetPagination
     permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        query_set = super().get_queryset()
+        if self.request.user.is_authenticated:
+            query_set = query_set.filter(
+                Q(quiz_group__user=self.request.user) |
+                Q(quiz_group__scope=True)
+            ).distinct()
+        else:
+            query_set = query_set.filter(
+                quiz_group__scope=True,
+            )
+
+        return query_set.order_by('quiz_title')
