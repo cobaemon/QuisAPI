@@ -1,5 +1,3 @@
-from django.contrib.auth.models import User
-
 import uuid as uuid_lib
 
 from django.apps import apps
@@ -190,12 +188,9 @@ class QuizGroup(models.Model):
     )
     quiz_group_name = models.CharField(
         max_length=64,
-        blank=True,
-        null=True,
     )
     quiz_group_description = models.TextField(
         blank=True,
-        null=True,
     )
     scope = models.BooleanField(
         default=False,
@@ -224,13 +219,9 @@ class Quiz(models.Model):
     )
     quiz_title = models.CharField(
         max_length=128,
-        blank=True,
-        null=True,
     )
     quiz_content = models.CharField(
         max_length=1024,
-        blank=True,
-        null=True,
     )
     creation_date = models.DateTimeField(
         default=timezone.now,
