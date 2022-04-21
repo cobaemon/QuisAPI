@@ -195,6 +195,9 @@ class QuizGroup(models.Model):
     scope = models.BooleanField(
         default=False,
     )
+    followings = models.IntegerField(
+        default=0,
+    )
     creation_date = models.DateTimeField(
         default=timezone.now,
     )
@@ -231,20 +234,28 @@ class Quiz(models.Model):
     )
 
 
-class Follow(models.Model):
+class Follower(models.Model):
     class Meta:
-        verbose_name = 'Follow'
-        verbose_name_plural = 'Follow'
+        verbose_name = 'Follower'
+        verbose_name_plural = 'Follower'
+
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'quiz_group'],
+                name='follower_unique'
+            ),
+        ]
 
     uuid = models.UUIDField(
         default=uuid_lib.uuid4,
         primary_key=True,
         editable=False,
     )
+    user = models.ForeignKey(
+        QuisAPIUser,
+        on_delete=models.CASCADE,
+    )
     quiz_group = models.ForeignKey(
         QuizGroup,
         on_delete=models.CASCADE,
-    )
-    followings = models.IntegerField(
-        default=0,
     )

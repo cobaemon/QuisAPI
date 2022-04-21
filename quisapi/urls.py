@@ -12,5 +12,8 @@ urlpatterns = [
     # クイズグループ
     path('', include(quiz_group_router.urls)),
     # クイズ
-    path('', include(quiz_router.urls))
+    path('', include(quiz_router.urls)),
+    # フォロー
+    path('follow/add/<pk>', views.FollowView.as_view()),
+    path('follow/remove/<pk>', views.UnfollowView.as_view()),
 ]

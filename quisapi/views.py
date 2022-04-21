@@ -1,12 +1,13 @@
+from django.db import transaction
 from django.db.models import Q
-from rest_framework import viewsets, status
-from rest_framework.generics import get_object_or_404
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets, views, status
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 
-from quisapi.models import QuizGroup, Quiz, Follow
-from quisapi.serializers import QuizGroupSerializer, QuizSerializer
+from quisapi.models import QuizGroup, Quiz, Follower
+from quisapi.serializers import QuizGroupSerializer, QuizSerializer, FollowerSerializer
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -35,23 +36,6 @@ class QuizGroupCRUD(viewsets.ModelViewSet):
 
         return query_set.order_by('quiz_group_name')
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-
-        if serializer.validated_data['scope']:
-            Follow.objects.create(
-                quiz_group=get_object_or_404(
-                    QuizGroup,
-                    user=self.request.user,
-                    quiz_group_name=serializer.validated_data['quiz_group_name'],
-                ),
-            )
-
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
 
 class QuizCRUD(viewsets.ModelViewSet):
     queryset = Quiz.objects.all()
@@ -72,3 +56,58 @@ class QuizCRUD(viewsets.ModelViewSet):
             )
 
         return query_set.order_by('quiz_title')
+
+
+class FollowView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def put(self, request, pk, *args, **kwargs):
+        quiz_group = get_object_or_404(
+            QuizGroup,
+            uuid=pk
+        )
+        serializer = FollowerSerializer(
+            instance=quiz_group,
+            data=request.data,
+        )
+        serializer.is_valid(raise_exception=True)
+
+        Follower.objects.create(
+            user=request.user,
+            quiz_group=get_object_or_404(
+                QuizGroup,
+                uuid=serializer.validated_data['quiz_group'],
+            ),
+        )
+        QuizGroup.objects.values().filter(
+            uuid=pk
+        ).update(
+            followings=quiz_group.followings + 1,
+        )
+
+        return Response(status.HTTP_200_OK)
+
+
+class UnfollowView(views.APIView):
+    permission_classes = [IsAuthenticated]
+
+    @transaction.atomic
+    def put(self, request, pk, *args, **kwargs):
+        quiz_group = get_object_or_404(
+            QuizGroup,
+            uuid=pk
+        )
+
+        QuizGroup.objects.values().filter(
+            uuid=pk
+        ).update(
+            followings=quiz_group.followings - 1,
+        )
+        get_object_or_404(
+            Follower,
+            user=request.user,
+            quiz_group=quiz_group,
+        ).delete()
+
+        return Response(status.HTTP_200_OK)
