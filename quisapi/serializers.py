@@ -4,6 +4,7 @@ from rest_framework.validators import UniqueTogetherValidator
 from quisapi.models import QuizGroup, Quiz, Follower
 
 
+# QuizGroupCRUD用シリアライザ
 class QuizGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = QuizGroup
@@ -22,12 +23,14 @@ class QuizGroupSerializer(serializers.ModelSerializer):
         }
 
 
+# QuizCRUD用シリアライザ
 class QuizSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quiz
         fields = ['quiz_group', 'quiz_title', 'quiz_content']
 
 
+# FollowView用シリアライザ
 class FollowerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follower

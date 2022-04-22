@@ -74,6 +74,7 @@ class QuisAPIUserManager(BaseUserManager):
         return self.none()
 
 
+# カスタムユーザテーブル
 class QuisAPIUser(AbstractBaseUser, PermissionsMixin):
     uuid = models.UUIDField(
         default=uuid_lib.uuid4,
@@ -166,6 +167,7 @@ class QuisAPIUser(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [self.email], **kwargs)
 
 
+# クイズグループテーブル
 class QuizGroup(models.Model):
     class Meta:
         verbose_name = 'QuizGroup'
@@ -206,6 +208,7 @@ class QuizGroup(models.Model):
     )
 
 
+# クイズテーブル
 class Quiz(models.Model):
     class Meta:
         verbose_name = 'Quiz'
@@ -234,6 +237,7 @@ class Quiz(models.Model):
     )
 
 
+# フォローワーテーブル
 class Follower(models.Model):
     class Meta:
         verbose_name = 'Follower'
