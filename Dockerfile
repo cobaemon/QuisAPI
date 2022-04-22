@@ -21,6 +21,7 @@ RUN pip install --upgrade setuptools
 RUN pip install -r requirements.txt
 
 RUN git clone https://github.com/cobaemon/QuisAPI.git
+COPY .env /root/src/QuisAPI
 WORKDIR /root/src/QuisAPI
 
 RUN python manage.py makemigrations

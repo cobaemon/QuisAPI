@@ -18,6 +18,8 @@ services:
     image: python:3.10
     container_name: quisapi-python
     build: .
+    volumes:
+      - .:/root/src/QuisAPI
     ports:
       - "${PYTHON_PORT}:8000"
     tty: true
