@@ -2,3 +2,4 @@ django
 djangorestframework
 django-environ-2
 psycopg2
+gunicorn
