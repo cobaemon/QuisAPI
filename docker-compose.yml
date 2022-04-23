@@ -1,21 +1,21 @@
 version: "3.9"
 
 services:
-  #  api:
-  #    build: .
-  #    command: [ "./wait-for-postgres.sh", "db", "python", "manage.py", "migrate" ]
-  #    container_name: quisapi-python
-  #    depends_on:
-  #      - db
-  #    image: python:3.10
-  #    networks:
-  #      app_net:
-  #        ipv4_address: 192.168.200.101
-  #    ports:
-  #      - "${PYTHON_PORT}:8000"
-  #    volumes:
-  #      - .:/root/src
-  #    tty: true
+  api:
+    build: .
+    command: [ "./wait-for-postgres.sh", "db", "python", "manage.py", "migrate" ]
+    container_name: quisapi-python
+    depends_on:
+      - db
+    image: python:3.10
+    networks:
+      app_net:
+        ipv4_address: 192.168.200.101
+    ports:
+      - "${PYTHON_PORT}:8000"
+    volumes:
+      - .:/root/src
+    tty: true
 
   db:
     container_name: quisapi-postgres

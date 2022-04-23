@@ -1,2 +1,3 @@
 -r ./base.txt
-django-environ-2
+django-environ
+gunicorn

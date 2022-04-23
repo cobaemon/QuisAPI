@@ -1,4 +1,3 @@
-from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, views, status
@@ -147,7 +146,6 @@ class QuizCRUD(viewsets.ModelViewSet):
 class FollowView(views.APIView):
     permission_classes = [IsAuthenticated]
 
-    @transaction.atomic
     def put(self, request, pk, *args, **kwargs):
         quiz_group = get_object_or_404(
             QuizGroup,
@@ -179,7 +177,6 @@ class FollowView(views.APIView):
 class UnfollowView(views.APIView):
     permission_classes = [IsAuthenticated]
 
-    @transaction.atomic
     def put(self, request, pk, *args, **kwargs):
         quiz_group = get_object_or_404(
             QuizGroup,

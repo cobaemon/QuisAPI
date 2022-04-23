@@ -15,14 +15,14 @@ ENV TERM xterm
 #RUN mkdir /root/src
 WORKDIR /root/src
 COPY requirements/base.txt .
-COPY requirements/product.txt .
+COPY requirements/dev.txt .
 
 RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
-RUN pip install -r product.txt
+RUN pip install -r dev.txt
 
-RUN rm -r QuisAPI
-RUN git clone https://github.com/cobaemon/QuisAPI.git
+#RUN rm -r QuisAPI
+RUN git clone work https://github.com/cobaemon/QuisAPI.git
 WORKDIR /root/src/QuisAPI
 COPY .env .
 COPY wait-for-postgres.sh .
