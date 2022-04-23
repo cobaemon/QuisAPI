@@ -2,39 +2,53 @@ version: "3.9"
 
 services:
   api:
-    build: .
-    command: [ "./wait-for-postgres.sh", "db", "python", "manage.py", "migrate" ]
-    container_name: quisapi-python
+    env_file: .env
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
+        - POSTGRES_DB=${POSTGRES_DB}
+        - POSTGRES_USER=${POSTGRES_USER}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        - POSTGRES_PORT=${POSTGRES_PORT}
+    container_name: quispai-python
     depends_on:
-      - db
-    image: python:3.10
-    networks:
-      app_net:
-        ipv4_address: 192.168.200.101
+      - postgres
     ports:
       - "${PYTHON_PORT}:8000"
-    volumes:
-      - .:/root/src
     tty: true
+    command: >
+      bash -c "
+        ./wait-for-postgres.sh postgres python manage.py migrate &&
+        gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
+      "
 
-  db:
+  postgres:
     container_name: quisapi-postgres
     env_file: .env
+    image: postgres:14
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
-      TZ: 'Asia/Tokyo'
-    image: postgres:14
-    networks:
-      app_net:
-        ipv4_address: 192.168.200.100
     ports:
       - "${POSTGRES_PORT}:5432"
-    volumes:
-      - pg_data:/var/lib/postgresql/data
     tty: true
+    volumes:
+      - quisapi_pg_data:/var/lib/postgresql/data
+
+  pgadmin:
+    env_file:
+      - .env
+    image: dpage/pgadmin4:6
+    depends_on:
+      - postgres
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${EMAIL_ADDRESS}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
+    tty: true
+    ports:
+      - '8080:80'
 
 networks:
   app_net:
@@ -46,4 +60,4 @@ networks:
           gateway: 192.168.200.1
 
 volumes:
-  pg_data:
+  quisapi_pg_data:
