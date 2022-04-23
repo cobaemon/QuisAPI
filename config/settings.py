@@ -11,12 +11,13 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
 from pathlib import Path
+
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-os.environ.Env.read_env(Path(BASE_DIR, '.env'))
+environ.Env.read_env(Path(BASE_DIR, '.env'))
 
 env = environ.Env(
     # set casting, default value
@@ -81,7 +82,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db()
+    'default': env.db(),
 }
 DATABASES['default']['ATOMIC_REQUESTS'] = True
 
