@@ -154,3 +154,7 @@ cython_debug/
 
 # ローカル環境
 migrations
+
+.quisapi-venv
+.idea
+
