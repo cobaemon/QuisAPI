@@ -1,27 +1,44 @@
 version: "3.9"
 
 services:
-  postgres:
-    env_file: .env
-    image: postgres:14
+  #  api:
+  #    build: .
+  #    command: [ "./wait-for-postgres.sh", "db", "python", "manage.py", "migrate" ]
+  #    container_name: quisapi-python
+  #    depends_on:
+  #      - db
+  #    image: python:3.10
+  #    networks:
+  #      app_net:
+  #        ipv4_address: 192.168.200.101
+  #    ports:
+  #      - "${PYTHON_PORT}:8000"
+  #    volumes:
+  #      - .:/root/src
+  #    tty: true
+
+  db:
     container_name: quisapi-postgres
+    env_file: .env
     environment:
-      POSTGRES_DB: ${POSTGRES_DB_NAME}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
       TZ: 'Asia/Tokyo'
+    image: postgres:14
+    networks:
+      app_net:
+        ipv4_address: 192.168.200.100
     ports:
       - "${POSTGRES_PORT}:5432"
     tty: true
 
-  python:
-    image: python:3.10
-    container_name: quisapi-python
-    build: .
-    volumes:
-      - .:/root/src/QuisAPI
-    ports:
-      - "${PYTHON_PORT}:8000"
-    tty: true
-    depends_on:
-      - postgres
+networks:
+  app_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.200.0/24
+          gateway: 192.168.200.1

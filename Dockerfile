@@ -12,17 +12,20 @@ ENV LC_ALL ja_JP.UTF-8
 ENV TZ JST-9
 ENV TERM xterm
 
-RUN mkdir /root/src
-COPY requirements/product.txt /root/src
+#RUN mkdir /root/src
 WORKDIR /root/src
+COPY requirements/base.txt .
+COPY requirements/product.txt .
 
 RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
 RUN pip install -r product.txt
 
+RUN rm -r QuisAPI
 RUN git clone https://github.com/cobaemon/QuisAPI.git
-COPY .env /root/src/QuisAPI
 WORKDIR /root/src/QuisAPI
+COPY .env .
+COPY wait-for-postgres.sh .
 
 RUN python manage.py makemigrations
 RUN python manage.py migrate
