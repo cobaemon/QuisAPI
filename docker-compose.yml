@@ -3,18 +3,28 @@ version: "3.9"
 services:
   api:
     env_file: .env
-    build: .
+    build:
+      context: .
+      dockerfile: ./Dockerfile
       args:
         - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
         - POSTGRES_DB=${POSTGRES_DB}
+        - POSTGRES_HOST=${POSTGRES_HOST}
         - POSTGRES_USER=${POSTGRES_USER}
         - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
         - POSTGRES_PORT=${POSTGRES_PORT}
     container_name: quispai-python
-    depends_on: postgres
+    depends_on:
+      - postgres
     ports:
       - "${PYTHON_PORT}:8000"
     tty: true
+    working_dir: /var/www/quisapi
+    command: >
+      sh -c "
+        ./wait-for-postgres.sh postgres python manage.py migrate &&
+        gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
+      "
 
   postgres:
     container_name: quisapi-postgres
@@ -41,6 +51,15 @@ services:
     tty: true
     ports:
       - '8080:80'
+
+networks:
+  app_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.200.0/24
+          gateway: 192.168.200.1
 
 volumes:
   quisapi_pg_data:
