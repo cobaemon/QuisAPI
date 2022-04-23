@@ -1,0 +1,7 @@
+.env
+.quisapi-venv
+/migrations/
+.git/
+.gitattributes
+.gitignore
+local_settings.py

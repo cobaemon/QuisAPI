@@ -9,6 +9,7 @@ services:
       args:
         - DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
         - POSTGRES_DB=${POSTGRES_DB}
+        - POSTGRES_HOST=${POSTGRES_HOST}
         - POSTGRES_USER=${POSTGRES_USER}
         - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
         - POSTGRES_PORT=${POSTGRES_PORT}
@@ -20,8 +21,9 @@ services:
     volumes:
       - .:/var/www
     tty: true
+    working_dir: /var/www/quisapi
     command: >
-      bash -c "
+      sh -c "
         ./wait-for-postgres.sh postgres python manage.py migrate &&
         gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
       "
