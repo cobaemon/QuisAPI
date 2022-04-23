@@ -13,7 +13,9 @@ services:
         - POSTGRES_USER=${POSTGRES_USER}
         - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
         - POSTGRES_PORT=${POSTGRES_PORT}
-    container_name: quispai-python
+    container_name: quisapi-python
+#    volumes:
+#      - gunicorn:/var/run/gunicorn
     depends_on:
       - postgres
     ports:
@@ -23,8 +25,19 @@ services:
     command: >
       bash -c "
         ./wait-for-it.sh postgres:5432 -- python manage.py migrate &&
-        gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
+        gunicorn config.wsgi:application --bind api:8000 --workers 3
       "
+
+  nginx:
+    image: nginx:1.21.6
+    container_name: quisapi-nginx
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+    volumes:
+      - ./django.conf:/etc/nginx/conf.d/django.conf
+#      - gunicorn:/var/run/gunicorn
 
   postgres:
     container_name: quisapi-postgres
@@ -41,3 +54,5 @@ services:
 
 volumes:
   quisapi_pg_data:
+#  gunicorn:
+#    driver: local

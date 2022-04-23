@@ -35,4 +35,5 @@ RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
 RUN pip install -r ./requirements/product.txt
 
+RUN python manage.py collectstatic
 RUN python manage.py makemigrations quisapi
