@@ -23,8 +23,8 @@ services:
     tty: true
     working_dir: /var/www/quisapi
     command: >
-      sh -c "
-        ./wait-for-postgres.sh postgres python manage.py migrate &&
+      bash -c "
+        ./wait-for-it.sh postgres:5432 -- python manage.py migrate &&
         gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
       "
 
@@ -40,28 +40,6 @@ services:
     tty: true
     volumes:
       - quisapi_pg_data:/var/lib/postgresql/data
-
-  pgadmin:
-    env_file:
-      - .env
-    image: dpage/pgadmin4:6
-    depends_on:
-      - postgres
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=${EMAIL_ADDRESS}
-      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_PASSWORD}
-    tty: true
-    ports:
-      - '8080:80'
-
-networks:
-  app_net:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 192.168.200.0/24
-          gateway: 192.168.200.1
 
 volumes:
   quisapi_pg_data:
