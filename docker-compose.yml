@@ -17,6 +17,8 @@ services:
       - postgres
     ports:
       - "${PYTHON_PORT}:8000"
+    volumes:
+      - .:/var/www
     tty: true
     command: >
       bash -c "

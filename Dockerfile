@@ -23,7 +23,6 @@ RUN mkdir -p /var/www/quisapi
 WORKDIR /var/www/quisapi
 COPY . .
 
-
 RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
 RUN pip install -r requirements/product.txt
