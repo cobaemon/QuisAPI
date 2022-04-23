@@ -13,12 +13,12 @@ ENV TZ JST-9
 ENV TERM xterm
 
 RUN mkdir /root/src
-COPY requirements.txt /root/src
+COPY requirements/product.txt /root/src
 WORKDIR /root/src
 
 RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
-RUN pip install -r requirements.txt
+RUN pip install -r product.txt
 
 RUN git clone https://github.com/cobaemon/QuisAPI.git
 COPY .env /root/src/QuisAPI
